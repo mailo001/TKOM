@@ -1,0 +1,16 @@
+C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.csproj.AssemblyReference.cache
+C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.AssemblyInfoInputs.cache
+C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.AssemblyInfo.cs
+C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.csproj.CoreCompileInputs.cache
+C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\TKOM.exe
+C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\TKOM.deps.json
+C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\TKOM.runtimeconfig.json
+C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\TKOM.runtimeconfig.dev.json
+C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\TKOM.dll
+C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\ref\TKOM.dll
+C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\TKOM.pdb
+C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.dll
+C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\ref\TKOM.dll
+C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.pdb
+C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.genruntimeconfig.cache

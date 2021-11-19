@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TKOM", "TKOM\TKOM.csproj", "{3D93FB72-B5DF-4B9F-A053-4BCA2AAD8623}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TKOMTests", "TKOMTests\TKOMTests.csproj", "{546F076B-BF0A-4B60-A634-3DCA005B8D03}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3D93FB72-B5DF-4B9F-A053-4BCA2AAD8623}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D93FB72-B5DF-4B9F-A053-4BCA2AAD8623}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D93FB72-B5DF-4B9F-A053-4BCA2AAD8623}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D93FB72-B5DF-4B9F-A053-4BCA2AAD8623}.Release|Any CPU.Build.0 = Release|Any CPU
+		{546F076B-BF0A-4B60-A634-3DCA005B8D03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{546F076B-BF0A-4B60-A634-3DCA005B8D03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{546F076B-BF0A-4B60-A634-3DCA005B8D03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{546F076B-BF0A-4B60-A634-3DCA005B8D03}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {20F130F9-F1A2-425C-A578-DDFAA6979415}
+	EndGlobalSection
+EndGlobal
