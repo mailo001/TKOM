@@ -18,6 +18,7 @@ namespace TKOM.Common
 
         OR,
         AND,
+        NOT,
 
         EQUAL,
         NO_EQUAL,
@@ -52,7 +53,11 @@ namespace TKOM.Common
         IDENTIFIRE,
         NUMBER,
 
-        UNKNOWN
+        // More
+
+        UNKNOWN,
+        EMPTY,
+        EOF
     }
 
     public class Token

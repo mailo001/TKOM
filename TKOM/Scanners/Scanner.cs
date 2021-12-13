@@ -25,7 +25,7 @@ namespace TKOM.Scanners
             _charReader = charReader;
             _charReader.MoveToNextChar();
 
-            _token = null;
+            _token = new Token(TokenType.EMPTY, "", (0,0));
 
             InitSignsDictionary();
             InitWordDictionary();
@@ -41,15 +41,15 @@ namespace TKOM.Scanners
                 _charReader.MoveToNextChar();
             }
 
+            //Position of first char in Token
+            (int, int) position = _charReader.CurrentPosition;
+
             //Check if it is end sign of char reader
             if (_charReader.CurrentChar == (char)0)
             {
-                _token = null;
+                _token = new Token(TokenType.EOF, "", position);
                 return false;
             }
-
-            //Position of first char in Token
-            (int, int) position = _charReader.CurrentPosition;
 
             //Keyword or Identyfier
             if (char.IsLetter(_charReader.CurrentChar))
@@ -189,6 +189,7 @@ namespace TKOM.Scanners
 
             _signsDictionary.Add("&&", TokenType.AND);
             _signsDictionary.Add("||", TokenType.OR);
+            _signsDictionary.Add("!", TokenType.NOT);
 
             _signsDictionary.Add("==", TokenType.EQUAL);
             _signsDictionary.Add("!=", TokenType.NO_EQUAL);

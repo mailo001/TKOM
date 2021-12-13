@@ -23,7 +23,8 @@ namespace TKOMTests
             try
             {
                 Scanner scanner = new Scanner(charReader);
-                Assert.AreEqual(null, scanner.CurrentToken);
+                Assert.IsNotNull(scanner.CurrentToken);
+                Assert.AreEqual(TokenType.EMPTY, scanner.CurrentToken.TokenType);
             }
             catch
             {
@@ -40,7 +41,7 @@ namespace TKOMTests
         [TestMethod]
         public void GetTokenCorectly()
         {
-            ICharReader charReader = new StringReader("  if( \n i== 0) ");
+            ICharReader charReader = new StringReader("  if( !\n i== 0) ");
             Scanner scanner = new Scanner(charReader);
 
             Assert.AreEqual(true, scanner.MoveToNextToken());
@@ -48,6 +49,9 @@ namespace TKOMTests
 
             Assert.AreEqual(true, scanner.MoveToNextToken());
             Assert.AreEqual(TokenType.BRACKET_ENTER, scanner.CurrentToken.TokenType);
+
+            Assert.AreEqual(true, scanner.MoveToNextToken());
+            Assert.AreEqual(TokenType.NOT, scanner.CurrentToken.TokenType);
 
             scanner.MoveToNextToken();
             Assert.AreEqual(TokenType.IDENTIFIRE, scanner.CurrentToken.TokenType);
@@ -62,7 +66,8 @@ namespace TKOMTests
             Assert.AreEqual(TokenType.BRACKET_END, scanner.CurrentToken.TokenType);
 
             Assert.AreEqual(false, scanner.MoveToNextToken());
-            Assert.AreEqual(null, scanner.CurrentToken);
+            Assert.AreEqual(TokenType.EOF, scanner.CurrentToken.TokenType);
+
         }
 
         [TestMethod]
@@ -94,7 +99,7 @@ namespace TKOMTests
             Assert.AreEqual(TokenType.BRACKET_END, scanner.CurrentToken.TokenType);
 
             Assert.AreEqual(false, scanner.MoveToNextToken());
-            Assert.AreEqual(null, scanner.CurrentToken);
+            Assert.AreEqual(TokenType.EOF, scanner.CurrentToken.TokenType);
         }
 
         [TestMethod]
