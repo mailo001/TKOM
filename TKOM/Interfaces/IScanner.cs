@@ -12,6 +12,10 @@ namespace TKOM.Interfaces
     {
         Token CurrentToken { get; }
 
+        Token PrevToken { get; }
+
         bool MoveToNextToken();
+
+        void Restart();
     }
 }

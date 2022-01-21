@@ -17,5 +17,7 @@ namespace TKOM.Interfaces
         public void Restart();
 
         public string GetStringFromPosition((int, int) position, int lenght);
+
+        public string GetLine((int, int) position);
     }
 }

@@ -10,6 +10,7 @@ using TKOM.Common;
 using TKOM.Interfaces;
 using TKOM.CharReaders;
 using TKOM.Scanners;
+using TKOM.Errors;
 
 namespace TKOMTests
 {
@@ -19,10 +20,11 @@ namespace TKOMTests
         [TestMethod]
         public void InitScannerCorectly()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("if(i==0){a=2;}");
             try
             {
-                Scanner scanner = new Scanner(charReader);
+                Scanner scanner = new Scanner(charReader, errors);
                 Assert.IsNotNull(scanner.CurrentToken);
                 Assert.AreEqual(TokenType.EMPTY, scanner.CurrentToken.TokenType);
             }
@@ -35,14 +37,16 @@ namespace TKOMTests
         [TestMethod]
         public void InitScannerIncorectly()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => { Scanner scanner = new Scanner(null); });
+            ErrorsCollector errors = new ErrorsCollector();
+            Assert.ThrowsException<ArgumentNullException>(() => { Scanner scanner = new Scanner(null,errors); });
         }
 
         [TestMethod]
         public void GetTokenCorectly()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("  if( !\n i== 0) ");
-            Scanner scanner = new Scanner(charReader);
+            Scanner scanner = new Scanner(charReader, errors);
 
             Assert.AreEqual(true, scanner.MoveToNextToken());
             Assert.AreEqual(TokenType.IF, scanner.CurrentToken.TokenType);
@@ -73,8 +77,9 @@ namespace TKOMTests
         [TestMethod]
         public void WrongSignInToken()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("  if( \n i^== 0) ");
-            Scanner scanner = new Scanner(charReader);
+            Scanner scanner = new Scanner(charReader, errors);
 
             Assert.AreEqual(true, scanner.MoveToNextToken());
             Assert.AreEqual(TokenType.IF, scanner.CurrentToken.TokenType);
@@ -105,8 +110,9 @@ namespace TKOMTests
         [TestMethod]
         public void ManyBracketToken()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader(" \n({( ");
-            Scanner scanner = new Scanner(charReader);
+            Scanner scanner = new Scanner(charReader, errors);
 
             Assert.AreEqual(true, scanner.MoveToNextToken());
             Assert.AreEqual(TokenType.BRACKET_ENTER, scanner.CurrentToken.TokenType);
@@ -121,8 +127,9 @@ namespace TKOMTests
         [TestMethod]
         public void WrongOperatorToken()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("while a*=2");
-            Scanner scanner = new Scanner(charReader);
+            Scanner scanner = new Scanner(charReader, errors);
 
             Assert.AreEqual(true, scanner.MoveToNextToken());
             Assert.AreEqual(TokenType.WHILE, scanner.CurrentToken.TokenType);
@@ -141,8 +148,9 @@ namespace TKOMTests
         [TestMethod]
         public void WrongIdentifierToken()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("try 2a2c=12345");
-            Scanner scanner = new Scanner(charReader);
+            Scanner scanner = new Scanner(charReader, errors);
 
             Assert.AreEqual(true, scanner.MoveToNextToken());
             Assert.AreEqual(TokenType.TRY, scanner.CurrentToken.TokenType);
@@ -161,8 +169,9 @@ namespace TKOMTests
         [TestMethod]
         public void CorrectIdentifierToken()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("try c2a2c=12345");
-            Scanner scanner = new Scanner(charReader);
+            Scanner scanner = new Scanner(charReader, errors);
 
             Assert.AreEqual(true, scanner.MoveToNextToken());
             Assert.AreEqual(TokenType.TRY, scanner.CurrentToken.TokenType);

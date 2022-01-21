@@ -14,3 +14,4 @@ C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.dll
 C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\ref\TKOM.dll
 C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.pdb
 C:\Users\milos\source\repos\TKOM\TKOM\obj\Debug\net5.0\TKOM.genruntimeconfig.cache
+C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\Files\program.txt

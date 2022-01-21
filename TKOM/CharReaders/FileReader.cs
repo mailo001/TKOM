@@ -39,7 +39,19 @@ namespace TKOM.CharReaders
 
         public char CurrentChar => _currentChar;
 
-        public (int, int) CurrentPosition => (_currentLineNumber, _positionInLine + 1);
+        public (int, int) CurrentPosition => (_currentLineNumber, _positionInLine);
+
+        public string GetLine((int, int) position)
+        {
+            StreamReader streamReader = new StreamReader(_fileName);
+            for (int i = 1; i < position.Item1; i++)
+            {
+                streamReader.ReadLine();
+            }
+            string line = streamReader.ReadLine();
+            streamReader.Close();
+            return line;
+        }
 
         public string GetStringFromPosition((int, int) position, int lenght)
         {
@@ -49,7 +61,8 @@ namespace TKOM.CharReaders
                 streamReader.ReadLine();
             }
             string line = streamReader.ReadLine();
-            if(line == null)
+            streamReader.Close();
+            if (line == null)
             {
                 throw new ArgumentOutOfRangeException();
             }
@@ -61,6 +74,8 @@ namespace TKOM.CharReaders
         {
             if(_currentLine == null)
             {
+                _streamReader.Close();
+                _currentChar = '\0';
                 return false;
             }
 

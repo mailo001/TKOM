@@ -15,24 +15,40 @@ namespace TKOM.Parsers
         /// DefinicjaZmiennej     =   NazwaTypu identyfikator ["=" Wyrazenie];
         /// </summary>
         /// <returns></returns>
-        private VariableDefinitionNode TryToParseVariableDefinition()
+        private VariableDefinitionNode TryToParseVariableDefinition(bool assigment = true)
         {
-            CheckIsAndConsume(TokenType.INT);
-
-            if (_scanner.CurrentToken.TokenType != TokenType.IDENTIFIRE)
+            if(_scanner.CurrentToken.TokenType != TokenType.INT)
             {
                 return null;
             }
+            _scanner.MoveToNextToken();
 
-            VariableDefinitionNode variable = new VariableDefinitionNode(_scanner.CurrentToken);
+            if (_scanner.CurrentToken.TokenType != TokenType.IDENTIFIRE)
+            {
+                // Exeption
+                _errors.ReportError(_scanner.PrevToken.Position,
+                    "Variable must have name after int!");
+                return null;
+            }
+
+            VariableDefinitionNode variable = new VariableDefinitionNode(_scanner.CurrentToken.Text, _scanner.CurrentToken.Position);
             _scanner.MoveToNextToken();
             if (_scanner.CurrentToken.TokenType == TokenType.ASSIGN)
             {
+                if(!assigment)
+                {
+                    // Exeption
+                    _errors.ReportError(_scanner.CurrentToken.Position,
+                        "You cannot assigment variable in function definition!");
+                }
+
                 _scanner.MoveToNextToken();
                 variable.Value = TryToParseExpression();
                 if (variable.Value == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(_scanner.PrevToken.Position,
+                        "Expression is need after \"=\"!");
                 }
             }
 
@@ -53,72 +69,35 @@ namespace TKOM.Parsers
 
             BlockInstructionNode blockInstruction = new BlockInstructionNode();
 
-            while(_scanner.CurrentToken.TokenType != TokenType.CURLY_BRACKET_END)
-            {
-                Instruction instruction = null;
-
-                switch(_scanner.CurrentToken.TokenType)
-                {
-                    case TokenType.RETURN:
-                        {
-                            instruction = TryToParseReturn();
-                            CheckIsAndConsume(TokenType.SEMICOLON);
-                        }
-                        break;
-                    case TokenType.THROW:
-                        {
-                            instruction = TryToParseThrow();
-                            CheckIsAndConsume(TokenType.SEMICOLON);
-                        }
-                        break;
-                    case TokenType.INT:
-                        {
-                            instruction = TryToParseVariableDefinition();
-                            CheckIsAndConsume(TokenType.SEMICOLON);
-                        }
-                        break;
-                    case TokenType.IDENTIFIRE:
-                        {
-                            instruction = TryToParseIdentyfikator();
-                            CheckIsAndConsume(TokenType.SEMICOLON);
-                        }
-                        break;
-                    case TokenType.IF:
-                        {
-                            instruction = TryToParseIfElse();
-                        }
-                        break;
-                    case TokenType.WHILE:
-                        {
-                            instruction = TryToParseWhile();
-                        }
-                        break;
-                    case TokenType.TRY:
-                        {
-                            instruction = TryToParseTryCatch();
-                        }
-                        break;
-                }
-
-                if(instruction == null)
-                {
-                    if (_scanner.CurrentToken.TokenType == TokenType.EOF)
-                    {
-                        // TODO : Exeption
-                        break;
-                    }
-
-                    // TODO : Exeption
-                    _scanner.MoveToNextToken();
-                }
-                else
-                {
-                    blockInstruction.Instructions.Add(instruction);
-                }
+            Instruction instruction;
+            while ((instruction = TryToParseInstruction()) != null)
+            { 
+                blockInstruction.Instructions.Add(instruction);
             }
+
             CheckIsAndConsume(TokenType.CURLY_BRACKET_END);
 
             return blockInstruction;
+        }
+
+        Instruction TryToParseInstruction()
+        {
+            Instruction instruction;
+            if((instruction = TryToParseReturn()) != null
+                || (instruction = TryToParseThrow()) != null
+                || (instruction = TryToParseVariableDefinition()) != null
+                || (instruction = TryToParseIdentyfikator()) != null)
+            {
+                CheckIsAndConsume(TokenType.SEMICOLON);
+                return instruction;
+            }
+            if((instruction = TryToParseIfElse()) != null
+                || (instruction = TryToParseTryCatch()) != null
+                || (instruction = TryToParseWhile()) != null)
+            {
+                return instruction;
+            }
+            return null;
         }
 
         /// <summary>
@@ -138,9 +117,15 @@ namespace TKOM.Parsers
             TryCatchNode tryCatch = new TryCatchNode();
 
             tryCatch.TryBlock = TryToParseBlockInstruction();
+            if(tryCatch.TryBlock == null)
+            {
+                // Exeption
+                _errors.ReportError(_scanner.PrevToken.Position,
+                    "TryCatch instruction has to have block instruction there!");
+            }
 
             while(_scanner.CurrentToken.TokenType == TokenType.CATCH)
-            {
+            { 
                 _scanner.MoveToNextToken();
 
                 CheckIsAndConsume(TokenType.BRACKET_ENTER);
@@ -148,7 +133,9 @@ namespace TKOM.Parsers
                 Expression condition = TryToParseExpression();
                 if(condition == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(_scanner.PrevToken.Position,
+                    "Catch instruction has to have conditions in brackets!");
                 }
 
                 CheckIsAndConsume(TokenType.BRACKET_END);
@@ -156,10 +143,18 @@ namespace TKOM.Parsers
                 BlockInstructionNode block = TryToParseBlockInstruction();
                 if(block == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(_scanner.PrevToken.Position,
+                    "Catch instruction has to have block instruction after this");
                 }
 
                 tryCatch.CatchList.Add((condition, block));
+            }
+            if(tryCatch.CatchList.Count == 0)
+            {
+                // Exeption
+                _errors.ReportError(_scanner.PrevToken.Position,
+                    "TryCatch instruction has to have one Catch block after this");
             }
 
             return tryCatch;
@@ -184,15 +179,19 @@ namespace TKOM.Parsers
             whileNode.Condition = TryToParseExpression();
             if(whileNode.Condition == null)
             {
-                // TODO : Exeption
+                // Exeption
+                _errors.ReportError(_scanner.PrevToken.Position,
+                    "While instruction has to have condition inside brackets!");
             }
 
             CheckIsAndConsume(TokenType.BRACKET_END);
 
             whileNode.Block = TryToParseBlockInstruction();
-            if (whileNode.Condition == null)
+            if (whileNode.Block == null)
             {
-                // TODO : Exeption
+                // Exeption
+                _errors.ReportError(_scanner.PrevToken.Position,
+                    "While instruction has to have block instruction after this!");
             }
 
             return whileNode;
@@ -218,15 +217,19 @@ namespace TKOM.Parsers
             ifElse.Condition = TryToParseExpression();
             if(ifElse.Condition == null)
             {
-                // TODO : Exeption
+                // Exeption
+                _errors.ReportError(_scanner.PrevToken.Position,
+                    "IF instruction has to have condition inside brackets!");
             }
 
             CheckIsAndConsume(TokenType.BRACKET_END);
 
             ifElse.IfBlock = TryToParseBlockInstruction();
-            if (ifElse.Condition == null)
+            if (ifElse.IfBlock == null)
             {
-                // TODO : Exeption
+                // Exeption
+                _errors.ReportError(_scanner.PrevToken.Position,
+                    "IF instruction has to have block instructionafter this!");
             }
 
             if(_scanner.CurrentToken.TokenType == TokenType.ELSE)
@@ -236,7 +239,9 @@ namespace TKOM.Parsers
                 ifElse.ElseBlock = TryToParseBlockInstruction();
                 if (ifElse.Condition == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(_scanner.PrevToken.Position,
+                        "After ELSE instruction must be block instruction after this!");
                 }
             }
 
@@ -262,42 +267,52 @@ namespace TKOM.Parsers
             {
                 _scanner.MoveToNextToken();
 
-                AssigmentNode assigmentNode = new AssigmentNode(identyfire);
+                AssigmentNode assigmentNode = new AssigmentNode(identyfire.Text, identyfire.Position);
                 assigmentNode.Expression = TryToParseExpression();
                 if(assigmentNode.Expression == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(_scanner.PrevToken.Position,
+                        "In assigment instruction after '=' sign must be expression!");
                 }
                 return assigmentNode;
             }
             if(_scanner.CurrentToken.TokenType == TokenType.BRACKET_ENTER)
             {
-                FunctionInvocationNode functionInvocation = new FunctionInvocationNode(identyfire);
+                _scanner.MoveToNextToken();
 
-                do
+                FunctionInvocationNode functionInvocation = new FunctionInvocationNode(identyfire.Text, identyfire.Position);
+
+                Expression expression = TryToParseExpression();
+                if(expression == null)
+                {
+                    CheckIsAndConsume(TokenType.BRACKET_END);
+                    return functionInvocation;
+                }
+
+                functionInvocation.Arguments.Add(expression);
+
+                while(_scanner.CurrentToken.TokenType == TokenType.COMMA)
                 {
                     _scanner.MoveToNextToken();
-                    if (_scanner.CurrentToken.TokenType == TokenType.BRACKET_END)
-                    {
-                        _scanner.MoveToNextToken();
-                        return functionInvocation;
-                    }
-                    Expression expression = TryToParseExpression();
+                    expression = TryToParseExpression();
                     if (expression == null)
                     {
-                        // TODO : Exeption
+                        // Exeption
+                        _errors.ReportError(_scanner.PrevToken.Position,
+                            "After ',' must be expression in function invocation!");
                     }
                     else
                     {
                         functionInvocation.Arguments.Add(expression);
                     }
-                } while (_scanner.CurrentToken.TokenType == TokenType.COMMA);
+                }
 
                 CheckIsAndConsume(TokenType.BRACKET_END);
                 return functionInvocation;
             }
 
-            VariableNode variable = new VariableNode(identyfire);
+            VariableNode variable = new VariableNode(identyfire.Text, identyfire.Position);
             return variable;
         }
 
@@ -317,7 +332,9 @@ namespace TKOM.Parsers
             throwNode.Value = TryToParseExpression();
             if (throwNode.Value == null)
             {
-                // TODO : Exeption
+                // Exeption
+                _errors.ReportError(_scanner.PrevToken.Position,
+                    "In THROW instruction must be expression!");
             }
 
             return throwNode;
@@ -339,10 +356,14 @@ namespace TKOM.Parsers
             returnNode.Value = TryToParseExpression();
             if(returnNode.Value == null)
             {
-                // TODO : Exeption
+                // Exeption
+                _errors.ReportError(_scanner.PrevToken.Position,
+                    "In Return instruction must be expression!");
             }
 
             return returnNode;
+
+            
         }
     }
 }

@@ -12,6 +12,7 @@ using TKOM.Scanners;
 using TKOM.Parsers;
 using TKOM.TreeNodes;
 using TKOM.Common;
+using TKOM.Errors;
 
 namespace TKOMTests
 {
@@ -21,11 +22,12 @@ namespace TKOMTests
         [TestMethod]
         public void InitParserCorectly()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("abc");
-            IScanner scanner = new Scanner(charReader);
+            IScanner scanner = new Scanner(charReader, errors);
             try
             {
-                Parser parser = new Parser(scanner);
+                Parser parser = new Parser(scanner, errors);
                 Assert.IsNotNull(parser);
             }
             catch
@@ -37,9 +39,10 @@ namespace TKOMTests
         [TestMethod]
         public void CreateSimpleTree()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("int main() { int a; }");
-            IScanner scanner = new Scanner(charReader);
-            Parser parser = new Parser(scanner);
+            IScanner scanner = new Scanner(charReader, errors);
+            Parser parser = new Parser(scanner, errors);
 
             ProgramNode program = parser.GenerateProgramTree();
 
@@ -64,9 +67,10 @@ namespace TKOMTests
         [TestMethod]
         public void ManyFunction()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("int main() { int a; } int add(int a, int b) { return a + b; }");
-            IScanner scanner = new Scanner(charReader);
-            Parser parser = new Parser(scanner);
+            IScanner scanner = new Scanner(charReader, errors);
+            Parser parser = new Parser(scanner, errors);
 
             ProgramNode program = parser.GenerateProgramTree();
 
@@ -108,9 +112,10 @@ namespace TKOMTests
         [TestMethod]
         public void Expression()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("int main() { int a; a = 1 + 2 - 4 * (3 - 1); }");
-            IScanner scanner = new Scanner(charReader);
-            Parser parser = new Parser(scanner);
+            IScanner scanner = new Scanner(charReader, errors);
+            Parser parser = new Parser(scanner, errors);
 
             ProgramNode program = parser.GenerateProgramTree();
 
@@ -139,9 +144,8 @@ namespace TKOMTests
                 {
                     Assert.IsNotNull(assigment.Expression);
 
-                    Assert.AreEqual(NodeType.PlusMinus, assigment.Expression.NodeType);
+                    Assert.AreEqual(NodeType.Minus, assigment.Expression.NodeType);
 
-                    Assert.AreEqual(TokenType.MINUS, assigment.Expression.Token.TokenType);
                 }
             }
         }
@@ -149,9 +153,10 @@ namespace TKOMTests
         [TestMethod]
         public void IfElse()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("int main() { if(a > b) { throw 2; } else { func(); } }");
-            IScanner scanner = new Scanner(charReader);
-            Parser parser = new Parser(scanner);
+            IScanner scanner = new Scanner(charReader, errors);
+            Parser parser = new Parser(scanner, errors);
 
             ProgramNode program = parser.GenerateProgramTree();
 
@@ -178,7 +183,7 @@ namespace TKOMTests
                 {
                     Assert.IsNotNull(ifelse.Condition);
 
-                    Assert.AreEqual(NodeType.Compare, ifelse.Condition.NodeType);
+                    Assert.AreEqual(NodeType.More, ifelse.Condition.NodeType);
 
                     Assert.IsNotNull(ifelse.IfBlock);
 
@@ -199,9 +204,10 @@ namespace TKOMTests
         [TestMethod]
         public void WithoutBracket()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("int main() { int a; ");
-            IScanner scanner = new Scanner(charReader);
-            Parser parser = new Parser(scanner);
+            IScanner scanner = new Scanner(charReader, errors);
+            Parser parser = new Parser(scanner, errors);
 
             ProgramNode program = parser.GenerateProgramTree();
 
@@ -227,14 +233,15 @@ namespace TKOMTests
         [TestMethod]
         public void TryCatch()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("int main() " +
                 "{ " +
                     "try { throw 2; } " +
                     "catch (a && 2) { int b = 3; } " +
                     "catch (x > 1) { int a = 2; } " +
                 "}");
-            IScanner scanner = new Scanner(charReader);
-            Parser parser = new Parser(scanner);
+            IScanner scanner = new Scanner(charReader, errors);
+            Parser parser = new Parser(scanner, errors);
 
             ProgramNode program = parser.GenerateProgramTree();
 
@@ -286,9 +293,10 @@ namespace TKOMTests
         [TestMethod]
         public void WhileNode()
         {
+            ErrorsCollector errors = new ErrorsCollector();
             ICharReader charReader = new StringReader("int main() { while (a = 2) { func(); } }");
-            IScanner scanner = new Scanner(charReader);
-            Parser parser = new Parser(scanner);
+            IScanner scanner = new Scanner(charReader, errors);
+            Parser parser = new Parser(scanner, errors);
 
             ProgramNode program = parser.GenerateProgramTree();
 

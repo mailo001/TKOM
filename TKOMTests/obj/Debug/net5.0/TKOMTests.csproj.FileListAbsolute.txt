@@ -104,3 +104,4 @@ C:\Users\milos\source\repos\TKOM\TKOMTests\obj\Debug\net5.0\TKOMTests.dll
 C:\Users\milos\source\repos\TKOM\TKOMTests\obj\Debug\net5.0\ref\TKOMTests.dll
 C:\Users\milos\source\repos\TKOM\TKOMTests\obj\Debug\net5.0\TKOMTests.pdb
 C:\Users\milos\source\repos\TKOM\TKOMTests\obj\Debug\net5.0\TKOMTests.genruntimeconfig.cache
+C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\program.txt

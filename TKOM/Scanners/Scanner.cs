@@ -12,29 +12,46 @@ namespace TKOM.Scanners
     public class Scanner : IScanner
     {
         ICharReader _charReader;
+        IErrors _errors;
         Token _token;
+        Token _prevToken;
         Dictionary<string, TokenType> _wordsDictionary;
         Dictionary<string, TokenType> _signsDictionary;
 
-        public Scanner(ICharReader charReader)
+        public Scanner(ICharReader charReader, IErrors errors)
         {
-            if(charReader == null)
+            if(charReader == null || errors == null)
             {
                 throw new ArgumentNullException();
             }
-            _charReader = charReader;
-            _charReader.MoveToNextChar();
 
-            _token = new Token(TokenType.EMPTY, "", (0,0));
+            _errors = errors;
+
+            _charReader = charReader;
+            Restart();
 
             InitSignsDictionary();
             InitWordDictionary();
         }
 
+        public void Restart()
+        {
+            _charReader.Restart();
+            _charReader.MoveToNextChar();
+
+            _token = new Token(TokenType.EMPTY, "", (0, 0));
+            _prevToken = _token;
+        }
+
         public Token CurrentToken => _token;
+
+        public Token PrevToken => _prevToken;
 
         public bool MoveToNextToken()
         {
+            // PrevToken
+            _prevToken = _token;
+
             //Omit white signs
             while(CharIsWhite(_charReader.CurrentChar))
             {
@@ -96,6 +113,7 @@ namespace TKOM.Scanners
                     _token = new Token(TokenType.UNKNOWN, textWrongToken, position);
 
                     // TODO : Commit wrong identyfier or number error to IError 
+                    _errors.ReportError(position, "Incorect identyfire: " + textWrongToken + " It must start with letter!");
 
                     return true;
                 }
@@ -140,19 +158,20 @@ namespace TKOM.Scanners
                     return true;
                 }
 
-                // TODO: Commit wrong operator error to IError 
+                // Commit wrong operator error to IError 
+                _errors.ReportError(position, "Wrong operator in code: " + text);
 
                 _token = new Token(TokenType.UNKNOWN, text, position);
 
                 return true;
             }
 
+            // Commit incorect sign error to IError
+            _errors.ReportError(position, "Incorect sign in code: \'" + _charReader.CurrentChar.ToString() + "\'");
 
             // Incorect Sign
             _token = new Token(TokenType.UNKNOWN, _charReader.CurrentChar.ToString(), position);
             _charReader.MoveToNextChar();
-
-            // TODO: Commit incorect sign error to IError
 
             return true;
         }
@@ -210,7 +229,7 @@ namespace TKOM.Scanners
 
         bool CharIsWhite(char c)
         {
-            if (char.IsWhiteSpace(c) || char.IsSeparator(c) || c == '\t' || c == '\n')
+            if (char.IsWhiteSpace(c) || char.IsSeparator(c) || c == '\r' || c == '\t' || c == '\n')
             {
                 return true;
             }

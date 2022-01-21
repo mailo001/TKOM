@@ -94,5 +94,12 @@ namespace TKOM.CharReaders
 
             return true;
         }
+
+        public string GetLine((int, int) position)
+        {
+            string[] lines = _source.Split('\n');
+
+            return lines[position.Item1 - 1];
+        }
     }
 }

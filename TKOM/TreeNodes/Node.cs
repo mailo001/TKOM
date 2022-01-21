@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 using TKOM.Common;
+using TKOM.Visitors;
 
 namespace TKOM.TreeNodes
 {
     public enum NodeType
     {
+        Non,
+
         Program,
 
         Function,
@@ -32,10 +35,17 @@ namespace TKOM.TreeNodes
         And,
         Not,
         ConstLogic,
-        Compare,
+        Equal,
+        NoEqual,
+        More,
+        MoreEqual,
+        Less,
+        LessEqual,
 
-        PlusMinus,
-        MultiDivide,
+        Plus,
+        Minus,
+        Multi,
+        Divide,
         Unary,
         Const,
 
@@ -52,6 +62,8 @@ namespace TKOM.TreeNodes
         }
 
         public NodeType NodeType { get => _nodeType; }
+
+        public abstract void Accept(NodeVisitor nodeVisitor);
     }
 
 
@@ -67,6 +79,11 @@ namespace TKOM.TreeNodes
         }
 
         public Dictionary<string, FunctionNode> Functions { get => _dictionary; }
+
+        public override void Accept(NodeVisitor nodeVisitor)
+        {
+            nodeVisitor.VisitProgram(this);
+        }
     }
 
 
@@ -75,19 +92,26 @@ namespace TKOM.TreeNodes
     /// </summary>
     public class FunctionNode : Node
     {
-        Token _identyfire;
-        public FunctionNode(Token identyfire) : base(NodeType.Function)
+        string _identyfire;
+        (int, int) _position;
+        public FunctionNode(string identyfire, (int, int) position) : base(NodeType.Function)
         {
             _identyfire = identyfire;
+            _position = position;
         }
 
-        public string Identyfire { get => _identyfire.Text; }
+        public string Identyfire { get => _identyfire; }
 
-        public Token IdentyfireToken { get => _identyfire; }
+        public (int, int) IdentyfirePosition { get => _position; }
 
         public ParametrListNode ParametrList { get; set; }
 
         public BlockInstructionNode BlockInstruction { get; set; }
+
+        public override void Accept(NodeVisitor nodeVisitor)
+        {
+            nodeVisitor.VisitFunction(this);
+        }
     }
 
 
@@ -104,6 +128,11 @@ namespace TKOM.TreeNodes
         }
 
         public List<VariableDefinitionNode> Variables { get => _variables; }
+
+        public override void Accept(NodeVisitor nodeVisitor)
+        {
+            nodeVisitor.VisitParametrList(this);
+        }
     }
 
 }

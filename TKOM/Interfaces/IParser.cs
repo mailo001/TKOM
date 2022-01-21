@@ -7,7 +7,7 @@ using TKOM.TreeNodes;
 
 namespace TKOM.Interfaces
 {
-    interface IParser
+    public interface IParser
     {
         ProgramNode GenerateProgramTree();
     }

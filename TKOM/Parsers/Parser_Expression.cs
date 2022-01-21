@@ -23,25 +23,24 @@ namespace TKOM.Parsers
         Expression TryToParseOr()
         {
             Expression expression = TryToParseAnd();
-            if (_scanner.CurrentToken.TokenType != TokenType.OR)
-            {
-                return expression;
-            }
+            
             if (expression == null)
             {
-                // TODO : Exeption
+                return null;
             }
 
             while (_scanner.CurrentToken.TokenType == TokenType.OR)
             {
-                OrNode or = new OrNode(_scanner.CurrentToken);
+                OrNode or = new OrNode(_scanner.CurrentToken.Position);
                 _scanner.MoveToNextToken();
 
                 or.Left = expression;
                 or.Right = TryToParseAnd();
                 if(or.Right == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(or.Position,
+                        "After '||' operator must be expression");
                 }
 
                 expression = or;
@@ -57,25 +56,24 @@ namespace TKOM.Parsers
         Expression TryToParseAnd()
         {
             Expression expression = TryToParseNot();
-            if (_scanner.CurrentToken.TokenType != TokenType.AND)
-            {
-                return expression;
-            }
+            
             if (expression == null)
             {
-                // TODO : Exeption
+                return null;
             }
 
             while (_scanner.CurrentToken.TokenType == TokenType.AND)
             {
-                AndNode and = new AndNode(_scanner.CurrentToken);
+                AndNode and = new AndNode(_scanner.CurrentToken.Position);
                 _scanner.MoveToNextToken();
 
                 and.Left = expression;
                 and.Right = TryToParseNot();
                 if (and.Right == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(and.Position,
+                        "After '&&' operator must be expression");
                 }
 
                 expression = and;
@@ -92,12 +90,14 @@ namespace TKOM.Parsers
         {
             if(_scanner.CurrentToken.TokenType == TokenType.NOT)
             {
-                NotNode not = new NotNode(_scanner.CurrentToken);
+                NotNode not = new NotNode(_scanner.CurrentToken.Position);
                 _scanner.MoveToNextToken();
                 not.Expression = TryToParseLogicArgument();
                 if (not.Expression == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(not.Position,
+                        "After '!' operator must be expression");
                 }
                 return not;
             }
@@ -107,73 +107,87 @@ namespace TKOM.Parsers
         /// <summary>
         /// ArgumentLogiczny      =   Porownanie
         ///                         | StalaLogiczna 
-        ///                         | "(" Wyrazenie ")";
         /// </summary>
         /// <returns></returns>
         Expression TryToParseLogicArgument()
         {
-            if(_scanner.CurrentToken.TokenType == TokenType.TRUE || _scanner.CurrentToken.TokenType == TokenType.FALSE)
+            Expression expression;
+            if((expression = TryToParseLogicConst()) != null
+                || (expression = TryToParseCompare()) != null)
             {
-                return TryToParseLogicConst();
+                return expression;
             }
-            if(_scanner.CurrentToken.TokenType == TokenType.BRACKET_ENTER)
-            {
-                return TryToParseBracket();
-            }
-            return TryToParseComapre();
+            return null;
         }
 
         Expression TryToParseLogicConst()
         {
-            if (_scanner.CurrentToken.TokenType == TokenType.TRUE || _scanner.CurrentToken.TokenType == TokenType.FALSE)
-            {
-                Expression expression = new LogicConstNode(_scanner.CurrentToken);
-                _scanner.MoveToNextToken();
-                return expression;
-            }
+            bool value;
+            if (_scanner.CurrentToken.TokenType == TokenType.TRUE)
+                value = true;
+            else if (_scanner.CurrentToken.TokenType == TokenType.FALSE)
+                value = false;
             else
-            {
                 return null;
-            }
+
+            Expression expression = new LogicConstNode(value, _scanner.CurrentToken.Position);
+            _scanner.MoveToNextToken();
+            return expression;
         }
 
         /// <summary>
         /// Porownanie            =   WyrazenieArytmetyczne [OperatorPorownania WyrazenieArytmetyczne] ;
         /// </summary>
         /// <returns></returns>
-        private Expression TryToParseComapre()
+        private Expression TryToParseCompare()
         {
             Expression expression = TryToParsePlusMinus();
-            if (!IsCompare(_scanner.CurrentToken.TokenType))
+            if (expression == null)
+            {
+                return null;
+            }
+
+            NodeType nodeType;
+            if (!IsCompare(_scanner.CurrentToken.TokenType, out nodeType))
             {
                 return expression;
             }
-            if (expression == null)
-            {
-                // TODO : Exeption
-            }
 
-            CompareNode compare = new CompareNode(_scanner.CurrentToken);
+            CompareNode compare = new CompareNode(nodeType, _scanner.CurrentToken.Position);
             _scanner.MoveToNextToken();
 
             compare.Left = expression;
             compare.Right = TryToParsePlusMinus();
             if (compare.Right == null)
             {
-                // TODO : Exeption
+                // Exeption
+                _errors.ReportError(compare.Position,
+                        "After compare operator must be expression");
             }
 
             return compare;
         }
 
-        bool IsCompare(TokenType tokenType)
+        bool IsCompare(TokenType tokenType, out NodeType nodeType)
         {
-            return tokenType == TokenType.EQUAL
-                || tokenType == TokenType.NO_EQUAL
-                || tokenType == TokenType.MORE
-                || tokenType == TokenType.MORE_EQUAL
-                || tokenType == TokenType.LESS
-                || tokenType == TokenType.LESS_EQUAL;
+            nodeType = NodeType.Non;
+
+            if (tokenType == TokenType.EQUAL)
+                nodeType = NodeType.Equal;
+            else if (tokenType == TokenType.NO_EQUAL)
+                nodeType = NodeType.NoEqual;
+            else if (tokenType == TokenType.MORE)
+                nodeType = NodeType.More;
+            else if (tokenType == TokenType.MORE_EQUAL)
+                nodeType = NodeType.MoreEqual;
+            else if (tokenType == TokenType.LESS)
+                nodeType = NodeType.Less;
+            else if (tokenType == TokenType.LESS_EQUAL)
+                nodeType = NodeType.LessEqual;
+
+            if (nodeType == NodeType.Non)
+                return false;
+            return true;
         }
 
         /// <summary>
@@ -183,25 +197,30 @@ namespace TKOM.Parsers
         Expression TryToParsePlusMinus()
         {
             Expression expression = TryToParseMultiDivide();
-            if (_scanner.CurrentToken.TokenType != TokenType.PLUS && _scanner.CurrentToken.TokenType != TokenType.MINUS)
-            {
-                return expression;
-            }
+            
             if (expression == null)
             {
-                // TODO : Exeption
+                return null;
             }
 
             while (_scanner.CurrentToken.TokenType == TokenType.PLUS || _scanner.CurrentToken.TokenType == TokenType.MINUS)
             {
-                PlusMinusNode plusMinus = new PlusMinusNode(_scanner.CurrentToken);
+                NodeType nodeType;
+                if (_scanner.CurrentToken.TokenType == TokenType.PLUS)
+                    nodeType = NodeType.Plus;
+                else
+                    nodeType = NodeType.Minus;
+
+                PlusMinusNode plusMinus = new PlusMinusNode(nodeType, _scanner.CurrentToken.Position);
                 _scanner.MoveToNextToken();
 
                 plusMinus.Left = expression;
                 plusMinus.Right = TryToParseMultiDivide();
                 if (plusMinus.Right == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(plusMinus.Position,
+                        "After plus-minus operator must be expression");
                 }
 
                 expression = plusMinus;
@@ -218,25 +237,30 @@ namespace TKOM.Parsers
         private Expression TryToParseMultiDivide()
         {
             Expression expression = TryToParseUnary();
-            if (_scanner.CurrentToken.TokenType != TokenType.MULTI && _scanner.CurrentToken.TokenType != TokenType.DIVIDE)
-            {
-                return expression;
-            }
+            
             if (expression == null)
             {
-                // TODO : Exeption
+                return null;
             }
 
             while (_scanner.CurrentToken.TokenType == TokenType.MULTI || _scanner.CurrentToken.TokenType == TokenType.DIVIDE)
             {
-                MultiDivideNode multiDivide = new MultiDivideNode(_scanner.CurrentToken);
+                NodeType nodeType;
+                if (_scanner.CurrentToken.TokenType == TokenType.MULTI)
+                    nodeType = NodeType.Multi;
+                else
+                    nodeType = NodeType.Divide;
+
+                MultiDivideNode multiDivide = new MultiDivideNode(nodeType, _scanner.CurrentToken.Position);
                 _scanner.MoveToNextToken();
 
                 multiDivide.Left = expression;
                 multiDivide.Right = TryToParseUnary();
                 if (multiDivide.Right == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(multiDivide.Position,
+                        "After multi-divide operator must be expression");
                 }
 
                 expression = multiDivide;
@@ -253,12 +277,14 @@ namespace TKOM.Parsers
         {
             if (_scanner.CurrentToken.TokenType == TokenType.MINUS)
             {
-                UnaryNode unary = new UnaryNode(_scanner.CurrentToken);
+                UnaryNode unary = new UnaryNode(_scanner.CurrentToken.Position);
                 _scanner.MoveToNextToken();
                 unary.Expression = TryToParseArgument();
                 if (unary.Expression == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(unary.Position,
+                        "After '-' operator must be expression");
                 }
                 return unary;
             }
@@ -273,22 +299,22 @@ namespace TKOM.Parsers
         /// <returns></returns>
         Expression TryToParseArgument()
         {
-            if(_scanner.CurrentToken.TokenType == TokenType.NUMBER)
+            Expression expression;
+            if((expression = TryToParseConst()) != null
+                || (expression = TryToParseIdentyfikator()) != null
+                || (expression = TryToParseBracket()) != null)
             {
-                return TryToParseConst();
+                return expression;
             }
-            if(_scanner.CurrentToken.TokenType == TokenType.BRACKET_ENTER)
-            {
-                return TryToParseBracket();
-            }
-            return TryToParseIdentyfikator();
+            return null;
+            
         }
 
         Expression TryToParseConst()
         {
             if (_scanner.CurrentToken.TokenType == TokenType.NUMBER)
             {
-                ConstNode con = new ConstNode(_scanner.CurrentToken);
+                ConstNode con = new ConstNode((int)_scanner.CurrentToken.GetIntValue(),_scanner.CurrentToken.Position);
                 _scanner.MoveToNextToken();
                 return con;
             }
@@ -302,13 +328,15 @@ namespace TKOM.Parsers
                 return null;
             }
 
-            BracketNode bracket = new BracketNode(_scanner.CurrentToken);
+            BracketNode bracket = new BracketNode(_scanner.CurrentToken.Position);
             _scanner.MoveToNextToken();
 
             bracket.Expression = TryToParseExpression();
             if(bracket.Expression == null)
             {
-                // TODO : Exeption
+                // Exeption
+                _errors.ReportError(bracket.Position,
+                        "Inside brackets must be expression!");
             }
 
             CheckIsAndConsume(TokenType.BRACKET_END);

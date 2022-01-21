@@ -13,25 +13,35 @@ namespace TKOM.Parsers
     public partial class Parser : IParser
     {
         IScanner _scanner;
+        IErrors _errors;
 
-        public Parser(IScanner scanner)
+        public Parser(IScanner scanner, IErrors errors)
         {
-            if(scanner == null)
+            if(scanner == null || errors == null)
             {
                 throw new ArgumentNullException();
             }
 
             _scanner = scanner;
+            _errors = errors;
         }
 
         public ProgramNode GenerateProgramTree()
         {
-            while(_scanner.CurrentToken.TokenType != TokenType.EMPTY)
+            _scanner.Restart();
+
+            while(_scanner.CurrentToken.TokenType == TokenType.EMPTY)
             {
                 _scanner.MoveToNextToken();
             }
 
             ProgramNode program = TryToParseProgram();
+
+            if(_scanner.CurrentToken.TokenType != TokenType.EOF)
+            {
+                // Exeption
+                _errors.ReportError(_scanner.CurrentToken.Position, "There is enother text in this file which cannot be parser!");
+            }
 
             return program;
         }
@@ -40,7 +50,8 @@ namespace TKOM.Parsers
         {
             if (_scanner.CurrentToken.TokenType != tokenType)
             {
-                // TODO : Exeption
+                //Exeption
+                _errors.ReportError(_scanner.PrevToken.Position, "A token \"" + tokenType.ToString("g") + "\" is missing after this!");
             }
             else
             {
@@ -54,22 +65,24 @@ namespace TKOM.Parsers
         /// <returns></returns>
         ProgramNode TryToParseProgram()
         {
-            ProgramNode program = new ProgramNode();
-
-            while(_scanner.CurrentToken.TokenType != TokenType.EOF)
+            FunctionNode function = TryToParseFunction();
+            if (function == null)
             {
-                FunctionNode function = TryToParseFunction();
-                if(function == null)
-                {
-                    // TODO : Error - wrong token
-                
-                    _scanner.MoveToNextToken();
-                    continue;
-                }
+                // Exeption
+                _errors.ReportError((1, 0), 
+                    "In program must be at least one function!");
+                return null;
+            }
+            ProgramNode program = new ProgramNode();
+            program.Functions.Add(function.Identyfire, function);
 
+            while ((function = TryToParseFunction()) != null)
+            {
                 if(program.Functions.ContainsKey(function.Identyfire))
                 {
-                    // TODO : Exception
+                    // Exception
+                    _errors.ReportError(function.IdentyfirePosition,
+                        "You have enother function name like \"" + function.Identyfire + "\"!");
                 }
                 else
                 {
@@ -86,13 +99,20 @@ namespace TKOM.Parsers
         /// <returns></returns>
         FunctionNode TryToParseFunction()
         {
-            CheckIsAndConsume(TokenType.INT);
-
-            if(_scanner.CurrentToken.TokenType != TokenType.IDENTIFIRE)
+            if(_scanner.CurrentToken.TokenType != TokenType.INT)
             {
                 return null;
             }
-            FunctionNode function = new FunctionNode(_scanner.CurrentToken);
+            _scanner.MoveToNextToken();
+
+            if(_scanner.CurrentToken.TokenType != TokenType.IDENTIFIRE)
+            {
+                _errors.ReportError(_scanner.CurrentToken.Position,
+                    "This function must have a name hear!");
+                return null;
+            }
+
+            FunctionNode function = new FunctionNode(_scanner.CurrentToken.Text, _scanner.CurrentToken.Position);
             _scanner.MoveToNextToken();
 
             CheckIsAndConsume(TokenType.BRACKET_ENTER);
@@ -104,7 +124,9 @@ namespace TKOM.Parsers
             function.BlockInstruction = TryToParseBlockInstruction();
             if(function.BlockInstruction == null)
             {
-                // TODO : Exeption
+                // Exeption
+                _errors.ReportError(function.IdentyfirePosition,
+                    "Function \"" + function.Identyfire + "\" has to have block instruction inside");
             }
 
             return function;
@@ -116,7 +138,7 @@ namespace TKOM.Parsers
         /// <returns></returns>
         private ParametrListNode TryToParseParametrList()
         {
-            VariableDefinitionNode variable = TryToParseVariableDefinition();
+            VariableDefinitionNode variable = TryToParseVariableDefinition(false);
             if(variable == null)
             {
                 return null;
@@ -129,10 +151,12 @@ namespace TKOM.Parsers
             {
                 _scanner.MoveToNextToken();
 
-                variable = TryToParseVariableDefinition();
+                variable = TryToParseVariableDefinition(false);
                 if (variable == null)
                 {
-                    // TODO : Exeption
+                    // Exeption
+                    _errors.ReportError(_scanner.PrevToken.Position,
+                        "There is unnecessary ',' sign!");
                 }
                 else
                 {
