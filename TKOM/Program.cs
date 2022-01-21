@@ -13,11 +13,21 @@ namespace TKOM
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Start Debug program.txt");
-            Console.WriteLine();
-
+            Console.WriteLine("File to debug and interprete:");
             // File reader
-            FileReader reader = new FileReader("./Files/program.txt");
+            FileReader reader;
+            string filename = Console.ReadLine();
+            try
+            {
+                reader = new FileReader("./Files/" + filename + ".txt");
+            }
+            catch
+            {
+                Console.WriteLine("There is no file: " + filename + ".txt");
+                return;
+            }
+            Console.WriteLine("Start Debug " + filename + ".txt");
+            Console.WriteLine();
 
             // Scaner
             ErrorsCollector scannerError = new ErrorsCollector();

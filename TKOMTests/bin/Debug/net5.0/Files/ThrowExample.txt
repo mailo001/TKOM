@@ -1,0 +1,34 @@
+﻿int wyjatek1()
+{
+    throw 1;
+}
+
+int zlap()
+{
+    try
+    {
+        throw 10;
+    }
+    catch(Exception == wyjatek1())
+    {
+        print(-1);
+    }
+}
+
+int main()
+{
+    try
+    {
+        zlap();
+    }
+    catch (Exception == 1)
+    {
+        print(1);
+    }
+    catch (Exception == 10)
+    {
+        print(10);
+    }
+    
+    return 0;
+}

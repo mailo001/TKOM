@@ -7,7 +7,7 @@
     {
         if(a == 2)
         {
-            throw a;
+            throw c;
         }
         print(b / a);
     }

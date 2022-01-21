@@ -1,0 +1,26 @@
+﻿int dodaj(int a, int b)
+{
+    return a + b;
+}
+
+int razy(int a, int b, int c)
+{
+    return a * b * c;
+}
+
+int main()
+{
+    int a = 10;
+    int b = 3;
+
+    if(razy(a, b) >= 30)
+    {
+        print(razy(a, b));
+    }
+    
+    int c;
+    c = dodaj(razy(a, b), 100);
+    print(c);
+    
+    return 0;
+}

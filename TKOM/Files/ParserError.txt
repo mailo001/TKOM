@@ -1,11 +1,11 @@
 ﻿int main()
 {
     int a = 2;
-    int b = 10;
+    int b = 10
     
     try 
     {
-        if(a == 2)
+        if(a == )
         {
             throw a;
         }
@@ -18,7 +18,7 @@
     }
     catch (true)
     {
-        print(0);
+        print(0;
     }
     return 0;
 }

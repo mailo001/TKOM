@@ -105,3 +105,10 @@ C:\Users\milos\source\repos\TKOM\TKOMTests\obj\Debug\net5.0\ref\TKOMTests.dll
 C:\Users\milos\source\repos\TKOM\TKOMTests\obj\Debug\net5.0\TKOMTests.pdb
 C:\Users\milos\source\repos\TKOM\TKOMTests\obj\Debug\net5.0\TKOMTests.genruntimeconfig.cache
 C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\program.txt
+C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\FunctionError.txt
+C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\InterpreterError.txt
+C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\LiczbyPierwsze.txt
+C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\ParserError.txt
+C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\ScanerError.txt
+C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\ThrowExample.txt
+C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\ThrowExample_2.txt
