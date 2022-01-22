@@ -112,3 +112,4 @@ C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\ParserError.tx
 C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\ScanerError.txt
 C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\ThrowExample.txt
 C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\ThrowExample_2.txt
+C:\Users\milos\source\repos\TKOM\TKOMTests\bin\Debug\net5.0\Files\Silnia.txt

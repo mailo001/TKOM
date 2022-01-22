@@ -11,26 +11,19 @@ namespace TKOM.Visitors
 {
     public partial class Interpreter
     {
-        const string _PrintString = "print";
-        void PrintFunction(List<Expression> expressions)
+        public override void VisitPrintFunction(PrintFunctionNode printFunctionNode)
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            foreach (Expression expression in expressions)
+            foreach (int expression in _lastParametrsList)
             {
-                expression.Accept(this);
-                if (!_throw.IsNull())
-                    return;
-
-                if (_expression.IsNull())
-                {
-                    // TODO : Exeption
-                }
-                stringBuilder.Append(_expression.GetAndClear());
+                stringBuilder.Append(expression);
                 stringBuilder.Append(' ');
             }
 
             Console.WriteLine(stringBuilder.ToString());
+
+            _return.Set(0);
         }
     }
 }

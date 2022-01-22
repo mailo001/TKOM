@@ -13,6 +13,8 @@ namespace TKOM.TreeNodes
     {
         Non,
 
+        SysFunction,
+
         Program,
 
         Function,
@@ -89,6 +91,7 @@ namespace TKOM.TreeNodes
 
     /// <summary>
     /// Funkcja               =   NazwaTypu identyfikator "(" [ListaParametrow] ")" InstrukcjaBlokowa;
+    /// ListaParametrow       =   DefinicjaZmiennej {"," DefinicjaZmiennej} ;
     /// </summary>
     public class FunctionNode : Node
     {

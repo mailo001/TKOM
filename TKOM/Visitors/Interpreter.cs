@@ -42,6 +42,15 @@ namespace TKOM.Visitors
 
             _functions = null;
             _ExeptionVariable = null;
+
+            InitSysFunction();
+        }
+
+        void InitSysFunction()
+        {
+            _functions = new Dictionary<string, FunctionNode>();
+
+            _functions.Add(PrintFunctionNode.IdentyfireStr, new PrintFunctionNode());
         }
 
         public (int?, int?) InterpreteProgramTree(ProgramNode program)
@@ -57,13 +66,6 @@ namespace TKOM.Visitors
 
         public override void VisitProgram(ProgramNode program)
         {
-            // Check sys function
-            if(program.Functions.ContainsKey(_PrintString))
-            {
-                // Exeption
-                throw new InterpreterExeption("Program implements system function!", program.Functions[_PrintString].IdentyfirePosition);
-                
-            }
             if(!program.Functions.ContainsKey(_Main))
             {
                 // Exeption
@@ -74,8 +76,15 @@ namespace TKOM.Visitors
                 // Exeption
                 throw new InterpreterExeption("Main function has got parametr list!", program.Functions[_Main].IdentyfirePosition);
             }
-
-            _functions = program.Functions;
+            // Add function and check sys function
+            foreach(var function in program.Functions)
+            {
+                if(!_functions.TryAdd(function.Key, function.Value))
+                {
+                    // Exeption
+                    throw new InterpreterExeption("Function" + function.Value.Identyfire + "has same name as system function", function.Value.IdentyfirePosition);
+                }
+            }
 
             program.Functions[_Main].Accept(this);
             if (!_throw.IsNull())
@@ -109,15 +118,7 @@ namespace TKOM.Visitors
         }
 
         public override void VisitFunctionInvocation(FunctionInvocationNode functionInvocationNode)
-        {
-            // Add sys function
-            if(functionInvocationNode.Identyfire == _PrintString)
-            {
-                PrintFunction(functionInvocationNode.Arguments);
-                _expression.Set(0);
-                return;
-            }
-            
+        {   
             if(!_functions.ContainsKey(functionInvocationNode.Identyfire))
             {
                 // Exeption
@@ -129,8 +130,8 @@ namespace TKOM.Visitors
                 if(functionInvocationNode.Arguments.Count != 0)
                 {
                     // Exeption
-                    throw new InterpreterExeption("Function \"" + functionInvocationNode.Identyfire + "\" has different number of argument!",
-                        functionInvocationNode.Position);
+                    //throw new InterpreterExeption("Function \"" + functionInvocationNode.Identyfire + "\" has different number of argument!",
+                      //  functionInvocationNode.Position);
                 }
             }
             else if(_functions[functionInvocationNode.Identyfire].ParametrList.Variables.Count != functionInvocationNode.Arguments.Count)

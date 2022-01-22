@@ -1,22 +1,19 @@
 ﻿int silnia(int a)
 {
+    if(a < 1)
+    {
+        return -1;
+    }
     if(a == 1)
     {
         return 1;
-        print(a);
     }
     return silnia(a-1) * a;
-}
-
-int abc()
-{
-    int a;
 }
 
 
 int main()
 {
-    abc();
 
     print(silnia(5));
     

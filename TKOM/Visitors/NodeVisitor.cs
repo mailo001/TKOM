@@ -55,5 +55,7 @@ namespace TKOM.Visitors
         public abstract void VisitAssigment(AssigmentNode assigmentNode);
 
         public abstract void VisitFunctionInvocation(FunctionInvocationNode functionInvocationNode);
+
+        public abstract void VisitPrintFunction(PrintFunctionNode printFunctionNode);
     }
 }
