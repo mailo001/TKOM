@@ -95,6 +95,7 @@ namespace TKOM.Parsers
 
         /// <summary>
         /// Funkcja               =   NazwaTypu identyfikator "(" [ListaParametrow] ")" InstrukcjaBlokowa;
+        /// ListaParametrow       =   DefinicjaZmiennej {"," DefinicjaZmiennej} ;
         /// </summary>
         /// <returns></returns>
         FunctionNode TryToParseFunction()
@@ -117,7 +118,7 @@ namespace TKOM.Parsers
 
             CheckIsAndConsume(TokenType.BRACKET_ENTER);
 
-            function.ParametrList = TryToParseParametrList();
+            TryToCreateParametrList(function.ParametrList);
 
             CheckIsAndConsume(TokenType.BRACKET_END);
 
@@ -136,16 +137,15 @@ namespace TKOM.Parsers
         /// ListaParametrow       =   DefinicjaZmiennej {"," DefinicjaZmiennej} ;
         /// </summary>
         /// <returns></returns>
-        private ParametrListNode TryToParseParametrList()
+        private void TryToCreateParametrList(List<VariableDefinitionNode> list)
         {
             VariableDefinitionNode variable = TryToParseVariableDefinition(false);
             if(variable == null)
             {
-                return null;
+                return;
             }
 
-            ParametrListNode parametrList = new ParametrListNode();
-            parametrList.Variables.Add(variable);
+            list.Add(variable);
 
             while(_scanner.CurrentToken.TokenType == TokenType.COMMA)
             {
@@ -160,11 +160,9 @@ namespace TKOM.Parsers
                 }
                 else
                 {
-                    parametrList.Variables.Add(variable);
+                    list.Add(variable);
                 }
             }
-
-            return parametrList;
         }
 
         

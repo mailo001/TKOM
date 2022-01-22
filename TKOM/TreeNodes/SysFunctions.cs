@@ -12,7 +12,10 @@ namespace TKOM.TreeNodes
     public class PrintFunctionNode : FunctionNode
     {
         public static string IdentyfireStr = "print";
-        public PrintFunctionNode() : base(IdentyfireStr, (1, 0)) { }
+        public PrintFunctionNode() : base(IdentyfireStr, (1, 0)) 
+        {
+            _parametrs = null;
+        }
 
         public override void Accept(NodeVisitor nodeVisitor)
         {

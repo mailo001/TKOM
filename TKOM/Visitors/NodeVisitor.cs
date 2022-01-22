@@ -14,8 +14,6 @@ namespace TKOM.Visitors
 
         public abstract void VisitFunction(FunctionNode functionNode);
 
-        public abstract void VisitParametrList(ParametrListNode parametrListNode);
-
         public abstract void VisitVariableDefinition(VariableDefinitionNode variableDefinitionNode);
 
         public abstract void VisitBlockInstruction(BlockInstructionNode blockInstructionNode);

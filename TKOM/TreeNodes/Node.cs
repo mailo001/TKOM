@@ -95,19 +95,22 @@ namespace TKOM.TreeNodes
     /// </summary>
     public class FunctionNode : Node
     {
-        string _identyfire;
-        (int, int) _position;
+        protected string _identyfire;
+        protected (int, int) _position;
+        protected List<VariableDefinitionNode> _parametrs;
+
         public FunctionNode(string identyfire, (int, int) position) : base(NodeType.Function)
         {
             _identyfire = identyfire;
             _position = position;
+            _parametrs = new List<VariableDefinitionNode>();
         }
 
         public string Identyfire { get => _identyfire; }
 
         public (int, int) IdentyfirePosition { get => _position; }
 
-        public ParametrListNode ParametrList { get; set; }
+        public List<VariableDefinitionNode> ParametrList { get => _parametrs; }
 
         public BlockInstructionNode BlockInstruction { get; set; }
 
@@ -117,25 +120,6 @@ namespace TKOM.TreeNodes
         }
     }
 
-
-    /// <summary>
-    /// ListaParametrow       =   DefinicjaZmiennej {"," DefinicjaZmiennej} ;
-    /// </summary>
-    public class ParametrListNode : Node
-    {
-        List<VariableDefinitionNode> _variables;
-
-        public ParametrListNode() : base(NodeType.ParametrList)
-        {
-            _variables = new List<VariableDefinitionNode>();
-        }
-
-        public List<VariableDefinitionNode> Variables { get => _variables; }
-
-        public override void Accept(NodeVisitor nodeVisitor)
-        {
-            nodeVisitor.VisitParametrList(this);
-        }
-    }
+    
 
 }

@@ -66,12 +66,13 @@ namespace TKOM.Visitors
 
         public override void VisitProgram(ProgramNode program)
         {
-            if(!program.Functions.ContainsKey(_Main))
+            FunctionNode mainFunction;
+            if(!program.Functions.TryGetValue(_Main, out mainFunction))
             {
                 // Exeption
                 throw new InterpreterExeption("Program does not implement main function!", (1, 0));
             }
-            if(program.Functions[_Main].ParametrList != null)
+            if(mainFunction.ParametrList.Count != 0)
             {
                 // Exeption
                 throw new InterpreterExeption("Main function has got parametr list!", program.Functions[_Main].IdentyfirePosition);
@@ -86,7 +87,7 @@ namespace TKOM.Visitors
                 }
             }
 
-            program.Functions[_Main].Accept(this);
+            mainFunction.Accept(this);
             if (!_throw.IsNull())
                 return;
 
@@ -100,16 +101,19 @@ namespace TKOM.Visitors
 
         public override void VisitFunction(FunctionNode functionNode)
         {
+            if(functionNode.ParametrList == null)
+            {
+                // Exeption
+                throw new Exception("System function visit as function!");
+            }
+
             _functionCallStatments.Push(new FunctionCallStatment());
 
-            if(functionNode.ParametrList != null)
-            { 
-                functionNode.ParametrList.Accept(this);
-                if (!_throw.IsNull())
-                {
-                    _functionCallStatments.Pop();
-                    return;
-                }
+            AddAndSetParametrList(functionNode.ParametrList);
+            if (!_throw.IsNull())
+            {
+                _functionCallStatments.Pop();
+                return;
             }
 
             functionNode.BlockInstruction.Accept(this);
@@ -118,23 +122,15 @@ namespace TKOM.Visitors
         }
 
         public override void VisitFunctionInvocation(FunctionInvocationNode functionInvocationNode)
-        {   
-            if(!_functions.ContainsKey(functionInvocationNode.Identyfire))
+        {
+            FunctionNode function;
+            if(!_functions.TryGetValue(functionInvocationNode.Identyfire, out function))
             {
                 // Exeption
                 throw new InterpreterExeption("Program dose not implement \"" + functionInvocationNode.Identyfire + "\" function!", 
                     functionInvocationNode.Position);
             }
-            if(_functions[functionInvocationNode.Identyfire].ParametrList == null)
-            {
-                if(functionInvocationNode.Arguments.Count != 0)
-                {
-                    // Exeption
-                    //throw new InterpreterExeption("Function \"" + functionInvocationNode.Identyfire + "\" has different number of argument!",
-                      //  functionInvocationNode.Position);
-                }
-            }
-            else if(_functions[functionInvocationNode.Identyfire].ParametrList.Variables.Count != functionInvocationNode.Arguments.Count)
+            if(function.ParametrList != null && function.ParametrList.Count != functionInvocationNode.Arguments.Count)
             {
                 // Exeption
                 throw new InterpreterExeption("Function \"" + functionInvocationNode.Identyfire + "\" has different number of argument!",
@@ -156,7 +152,7 @@ namespace TKOM.Visitors
                 _lastParametrsList.Add(_expression.GetAndClear());
             }
 
-            _functions[functionInvocationNode.Identyfire].Accept(this);
+            function.Accept(this);
             if (!_throw.IsNull())
                 return;
 
@@ -172,16 +168,20 @@ namespace TKOM.Visitors
             _lastParametrsList.Clear();
         }
 
-        public override void VisitParametrList(ParametrListNode parametrListNode)
+        void AddAndSetParametrList(List<VariableDefinitionNode> variableDefinitions)
         {
-            if (_lastParametrsList.Count != parametrListNode.Variables.Count)
+            if (_lastParametrsList.Count != variableDefinitions.Count)
             {
                 throw new Exception("Function has different number of argument!");
+            }
+            if(variableDefinitions.Count == 0)
+            {
+                return;
             }
 
             _accualCall.AddNewFirstScope();
             int i = 0;
-            foreach(var parametr in parametrListNode.Variables)
+            foreach(var parametr in variableDefinitions)
             {
                 parametr.Accept(this);
                 if (!_throw.IsNull())
