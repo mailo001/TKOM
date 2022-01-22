@@ -169,14 +169,4 @@ namespace TKOM.TreeNodes
         }
     }
 
-    public class BracketNode : OneOperator
-    {
-        public BracketNode((int, int) position) : base(position, NodeType.Brackets) { }
-
-        public override void Accept(NodeVisitor nodeVisitor)
-        {
-            nodeVisitor.VisitBracket(this);
-        }
-    }
-
 }

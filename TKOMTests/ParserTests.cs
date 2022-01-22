@@ -54,7 +54,7 @@ namespace TKOMTests
             {
                 FunctionNode func = program.Functions["main"];
 
-                Assert.IsNull(func.ParametrList);
+                Assert.AreEqual(0, func.ParametrList.Count);
 
                 Assert.IsNotNull(func.BlockInstruction);
 
@@ -82,7 +82,7 @@ namespace TKOMTests
             {
                 FunctionNode func = program.Functions["main"];
 
-                Assert.IsNull(func.ParametrList);
+                Assert.AreEqual(0, func.ParametrList.Count);
 
                 Assert.IsNotNull(func.BlockInstruction);
 
@@ -99,7 +99,7 @@ namespace TKOMTests
 
                 Assert.IsNotNull(func.ParametrList);
 
-                Assert.AreEqual(2, func.ParametrList.Variables.Count);
+                Assert.AreEqual(2, func.ParametrList.Count);
 
                 Assert.IsNotNull(func.BlockInstruction);
 
@@ -127,7 +127,7 @@ namespace TKOMTests
             {
                 FunctionNode func = program.Functions["main"];
 
-                Assert.IsNull(func.ParametrList);
+                Assert.AreEqual(0, func.ParametrList.Count);
 
                 Assert.IsNotNull(func.BlockInstruction);
 
@@ -168,7 +168,7 @@ namespace TKOMTests
             {
                 FunctionNode func = program.Functions["main"];
 
-                Assert.IsNull(func.ParametrList);
+                Assert.AreEqual(0, func.ParametrList.Count);
 
                 Assert.IsNotNull(func.BlockInstruction);
 
@@ -219,7 +219,7 @@ namespace TKOMTests
             {
                 FunctionNode func = program.Functions["main"];
 
-                Assert.IsNull(func.ParametrList);
+                Assert.AreEqual(0, func.ParametrList.Count);
 
                 Assert.IsNotNull(func.BlockInstruction);
 
@@ -253,7 +253,7 @@ namespace TKOMTests
             {
                 FunctionNode func = program.Functions["main"];
 
-                Assert.IsNull(func.ParametrList);
+                Assert.AreEqual(0, func.ParametrList.Count);
 
                 Assert.IsNotNull(func.BlockInstruction);
 
@@ -308,7 +308,7 @@ namespace TKOMTests
             {
                 FunctionNode func = program.Functions["main"];
 
-                Assert.IsNull(func.ParametrList);
+                Assert.AreEqual(0, func.ParametrList.Count);
 
                 Assert.IsNotNull(func.BlockInstruction);
 

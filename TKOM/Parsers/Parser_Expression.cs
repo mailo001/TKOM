@@ -328,20 +328,19 @@ namespace TKOM.Parsers
                 return null;
             }
 
-            BracketNode bracket = new BracketNode(_scanner.CurrentToken.Position);
             _scanner.MoveToNextToken();
 
-            bracket.Expression = TryToParseExpression();
-            if(bracket.Expression == null)
+            Expression expression = TryToParseExpression();
+            if(expression == null)
             {
                 // Exeption
-                _errors.ReportError(bracket.Position,
+                _errors.ReportError(_scanner.PrevToken.Position,
                         "Inside brackets must be expression!");
             }
 
             CheckIsAndConsume(TokenType.BRACKET_END);
 
-            return bracket;
+            return expression;
         }
     }
 }

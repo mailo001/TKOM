@@ -46,8 +46,6 @@ namespace TKOM.Visitors
 
         public abstract void VisitConst(ConstNode constNode);
 
-        public abstract void VisitBracket(BracketNode bracketNode);
-
         public abstract void VisitVariable(VariableNode variableNode);
 
         public abstract void VisitAssigment(AssigmentNode assigmentNode);

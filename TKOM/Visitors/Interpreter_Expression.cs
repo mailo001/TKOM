@@ -35,11 +35,6 @@ namespace TKOM.Visitors
             _expression.Set(left * right == 0 ? 0 : 1);
         }
 
-        public override void VisitBracket(BracketNode bracketNode)
-        {
-            bracketNode.Expression.Accept(this);
-        }
-
         public override void VisitCompare(CompareNode compareNode)
         {
             compareNode.Left.Accept(this);
