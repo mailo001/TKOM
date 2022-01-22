@@ -20,7 +20,7 @@ namespace TKOM.Scanners
 
         public Scanner(ICharReader charReader, IErrors errors)
         {
-            if(charReader == null || errors == null)
+            if (charReader == null || errors == null)
             {
                 throw new ArgumentNullException();
             }
@@ -53,7 +53,7 @@ namespace TKOM.Scanners
             _prevToken = _token;
 
             //Omit white signs
-            while(CharIsWhite(_charReader.CurrentChar))
+            while (CharIsWhite(_charReader.CurrentChar))
             {
                 _charReader.MoveToNextChar();
             }
@@ -72,7 +72,7 @@ namespace TKOM.Scanners
             if (char.IsLetter(_charReader.CurrentChar))
             {
                 StringBuilder stringBuilder = new StringBuilder();
-                while(char.IsLetterOrDigit(_charReader.CurrentChar))
+                while (char.IsLetterOrDigit(_charReader.CurrentChar))
                 {
                     stringBuilder.Append(_charReader.CurrentChar);
                     _charReader.MoveToNextChar();
@@ -80,7 +80,7 @@ namespace TKOM.Scanners
                 string text = stringBuilder.ToString();
 
                 TokenType type;
-                if(_wordsDictionary.TryGetValue(text, out type))
+                if (_wordsDictionary.TryGetValue(text, out type))
                 {
                     _token = new Token(type, text, position);
                     return true;
@@ -101,7 +101,7 @@ namespace TKOM.Scanners
                 }
 
                 //Check if after digit is letter 
-                if(char.IsLetter(_charReader.CurrentChar))
+                if (char.IsLetter(_charReader.CurrentChar))
                 {
                     while (char.IsLetterOrDigit(_charReader.CurrentChar))
                     {
@@ -124,11 +124,11 @@ namespace TKOM.Scanners
             }
 
             //Brackets singel Token
-            if(CharIsBracket(_charReader.CurrentChar))
+            if (CharIsBracket(_charReader.CurrentChar))
             {
                 string text = _charReader.CurrentChar.ToString();
                 TokenType type;
-                if(!_signsDictionary.TryGetValue(text, out type))
+                if (!_signsDictionary.TryGetValue(text, out type))
                 {
                     throw new Exception("Invalid Dictionary");
                 }

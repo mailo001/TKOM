@@ -1,24 +1,24 @@
-﻿int main()
+﻿int silnia(int a)
 {
-    int a = 2;
-    int b = 10;
+    if(a == 1)
+    {
+        return 1;
+        print(a);
+    }
+    return silnia(a-1) * a;
+}
+
+int abc()
+{
+    int a;
+}
+
+
+int main()
+{
+    abc();
+
+    print(silnia(5));
     
-    try 
-    {
-        if(a == 2)
-        {
-            throw a;
-        }
-        print(b / a);
-    }
-    catch (Exception == 0 || Exception < 0)
-    {
-        print(-1);
-        return -1; 
-    }
-    catch (true)
-    {
-        print(0);
-    }
     return 0;
 }
