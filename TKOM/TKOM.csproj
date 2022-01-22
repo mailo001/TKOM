@@ -24,6 +24,9 @@
     <None Update="Files\ScanerError.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\Silnia.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\ThrowExample.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

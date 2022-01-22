@@ -22,3 +22,4 @@ C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\Files\FunctionError.txt
 C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\Files\ThrowExample.txt
 C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\Files\ThrowExample_2.txt
 C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\Files\LiczbyPierwsze.txt
+C:\Users\milos\source\repos\TKOM\TKOM\bin\Debug\net5.0\Files\Silnia.txt
